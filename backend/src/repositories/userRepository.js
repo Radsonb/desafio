@@ -1,8 +1,8 @@
 const { User } = require("../../database/models");
+const { Company } = require("../../database/models");
 
 class UserRepository {
   async create(userData) {
-    console.log(userData);
     try {
       const user = new User(userData);
       return await user.save();
@@ -13,7 +13,17 @@ class UserRepository {
 
   async show(id) {
     try {
-      return await User.findById(id);
+      const user = await User.findById(id);
+      const company = await Company.find({ user_id: id })
+
+      return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        company
+      }
     } catch(error) {
       throw new Error(`Erro ao buscar usuário por ID: ${error.message}`);
     }
@@ -49,7 +59,8 @@ class UserRepository {
 
   async delete(id) {
     try {
-      await User.findByIdAndDelete(id);
+      const user = await User.findByIdAndDelete(id);
+      return user;
     } catch(error) {
       throw new Error(`Erro ao deletar usuário: ${error.message}`);
     }

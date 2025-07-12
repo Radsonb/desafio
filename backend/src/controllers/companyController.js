@@ -1,5 +1,5 @@
 const companyRepository = require('../repositories/companyRepository');
-const {} = require('express-validator')
+const { validationResult} = require('express-validator')
 
 class CompanyController {
   async create(req, res) {
@@ -71,7 +71,7 @@ class CompanyController {
   async index(req, res) {
     try {
       const companies = await companyRepository.findByUserId(req.user.id);
-      res.json(companies);
+      res.json(companies || []);
     } catch(error) {
       res.status(500).json({
         erro: 'Erro interno do servidor',
@@ -92,7 +92,7 @@ class CompanyController {
       const { id } = req.params;
       const { fantasy_name, razao_social, cnpj } = req.body;
 
-      const existingCompany = await companyRepository.findByCnpj(cnpj);
+      const existingCompany = await companyRepository.findById(id);
       if (!existingCompany) {
         return res.status(404).json({
           erro: 'Empresa não encontrada'
@@ -103,15 +103,6 @@ class CompanyController {
         return res.status(401).json({
           erro: 'Acesso negado'
         });
-      }
-
-      if(cnpj && cnpj !== existingCompany.cnpj) {
-        const cnpjExists = await companyRepository.findByCnpj(cnpj);
-        if (cnpjExists) {
-          return res.status(409).json({
-            erro: 'CNPJ já esta sendo usado por outra empresa'
-          });
-        }
       }
 
       const updateData = {};

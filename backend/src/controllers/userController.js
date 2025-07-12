@@ -9,7 +9,7 @@ class UserController{
       if (!errors.isEmpty()) {
         return res.status(400).json({
           erro: 'Dados inválidos',
-          detalhes: errors.array()
+          details: errors.array()
         });
       }
 
@@ -24,8 +24,6 @@ class UserController{
 
       const user = await userRepository.create({name, email, password});
 
-      const token = generateToken(user._id);
-
       res.status(201).json({
         message: 'Usuário criado com sucesso',
         user: {
@@ -33,7 +31,6 @@ class UserController{
           name: user.name,
           email: user.email
         },
-        token
       });
     } catch (error) {
       res.status(500).json({
@@ -124,13 +121,7 @@ class UserController{
         });
       }
 
-      const user = await userRepository.delete(id);
-
-      if (!user) {
-        return res.status(404).json({
-          erro: 'Usuário não encontrado'
-        });
-      }
+      await userRepository.delete(id);
 
       res.json({
         message: 'Usuário excluído com sucesso'

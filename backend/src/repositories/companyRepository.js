@@ -26,6 +26,14 @@ class CompanyRepository {
     }
   }
 
+  async findById(id) {
+    try {
+      return await Company.findOne({ _id: id });
+    } catch(error) {
+      throw new Error(`Erro ao buscar empresa por CNPJ: ${error.message}`);
+    }
+  }
+
   async findByCnpj(cnpj) {
     try {
       return await Company.findOne({ cnpj });
