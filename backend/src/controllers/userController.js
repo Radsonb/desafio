@@ -1,16 +1,19 @@
 const userRepository = require('../repositories/userRepository');
 const { generateToken } = require('../utils/jwt');
+const { validationResult } = require('express-validator');
 
 class UserController{
   async create(req, res) {
     try {
-      const { name, email, password } = req.body;
-
-      if (!name || !email || !password) {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
         return res.status(400).json({
-          erro: 'Nome, email e senha são obrigatórios'
+          erro: 'Dados inválidos',
+          detalhes: errors.array()
         });
       }
+
+      const { name, email, password } = req.body;
 
       const existingUser = await userRepository.findByEmail(email);
       if(existingUser) {
@@ -71,6 +74,14 @@ class UserController{
 
   async update(req, res) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          erro: 'Dados inválidos',
+          detalhes: errors.array()
+        });
+      }
+
       const { id } = req.params;
       const userData = req.body;
 
@@ -133,14 +144,15 @@ class UserController{
 
   async login(req, res) {
     try {
-      const { email, password } = req.body;
-
-      if(!email || !password) {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
         return res.status(400).json({
-          erro: 'Email e senha são obrigatórios'
+          erro: 'Dados inválidos',
+          detalhes: errors.array()
         });
       }
 
+      const { email, password } = req.body;
       const user = await userRepository.verifyCredentials(email, password);
 
       const token = generateToken(user._id);
