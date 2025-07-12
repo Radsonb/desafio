@@ -23,18 +23,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     maxlength: 200
   },
-  products: [{
-    product_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'products',
-      required: true
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1
-    }
-  }],
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'preparing', 'delivered', 'cancelled'],
+    default: 'pending'
+  },
   total_value: {
     type: Number,
     default: 0
@@ -44,26 +37,5 @@ const orderSchema = new mongoose.Schema({
 });
 
 orderSchema.index({ company_id: 1 });
-
-orderSchema.pre('save', async function(next) {
-  if (this.products && this.products.length > 0) {
-    try {
-      const Product = mongoose.model('products');
-      let total = 0;
-
-      for (const item of this.products) {
-        const product = await Product.findById(item.product_id);
-        if (product) {
-          total += product.value * item.quantity;
-        }
-      }
-
-      this.total_value = total;
-      next();
-    } catch (error) {
-      next(error);      
-    }
-  } else {
-    next();
-  }
-})
+orderSchema.index({ client_id: 1 });
+orderSchema.index({ order_number: 1, company_id: 1 }, { unique: true });
