@@ -1,26 +1,26 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import DashboardTemplate from '../../components/templates/DashboardTemplate'
-import CompanyForm from '../../components/molecules/CompanyForm'
-import CompanyList from '../../components/organisms/CompanyList'
-import Button from '../../components/atoms/Button'
-import Alert from '../../components/atoms/Alert'
-import { useAuth } from '../contexts/AuthContext'
-import companyService from '../servives/companyService'
+import DashboardTemplate from '../../../components/templates/DashboardTemplate'
+import CompanyForm from '../../../components/molecules/CompanyForm'
+import CompanyList from '../../../components/organisms/CompanyList'
+import Button from '../../../components/atoms/Button'
+import Alert from '../../../components/atoms/Alert'
+import { useAuth } from '../../contexts/AuthContext'
+import companyService from '../../services/companyService'
 import { PlusIcon } from '@heroicons/react/24/outline'
-import Card from '../../components/atoms/Card'
+import Card from '../../../components/atoms/Card'
 
 export default function CompaniesPage() {
-  const [companies, setCompanies] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editingCompany, setEditingCompany] = useState(null)
-  const [formLoading, setFormLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  // const { isAuthenticated } = useAuth()
-  const router = useRouter()
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingCompany, setEditingCompany] = useState(null);
+  const [formLoading, setFormLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  // const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   // useEffect(() => {
   //   if (!isAuthenticated) {
@@ -29,7 +29,7 @@ export default function CompaniesPage() {
   //   }
 
   //   loadCompanies()
-  // }, [isAuthenticated, router])
+  // }, [isAuthenticated, router]);
 
   const loadCompanies = async () => {
     try {
@@ -42,7 +42,7 @@ export default function CompaniesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  };
 
   const handleCreateCompany = async (companyData) => {
     try {
@@ -56,7 +56,7 @@ export default function CompaniesPage() {
     } finally {
       setFormLoading(false)
     }
-  }
+  };
 
   const handleUpdateCompany = async (companyData) => {
     try {
@@ -71,7 +71,7 @@ export default function CompaniesPage() {
     } finally {
       setFormLoading(false)
     }
-  }
+  };
 
   const handleDeleteCompany = async (companyId) => {
     if (!confirm('Tem certeza que deseja excluir esta empresa?')) {
@@ -85,22 +85,22 @@ export default function CompaniesPage() {
     } catch (error) {
       setError(error.message)
     }
-  }
+  };
 
   const handleEdit = (company) => {
     setEditingCompany(company)
     setShowForm(true)
-  }
+  };
 
   const handleCancel = () => {
     setShowForm(false)
     setEditingCompany(null)
-  }
+  };
 
-  // if (!isAuthenticated) return null
+  // if (!isAuthenticated) return null;
 
   return (
-    <DashboardTemplate title="Empresas">
+    <DashboardTemplate title="Empresas" subtitle='Gerencie as empresas que vendem seus produtos'>
       {error && (
         <div className="mb-6">
           <Alert
@@ -158,5 +158,5 @@ export default function CompaniesPage() {
         />
       )}
     </DashboardTemplate>
-  )
+  );
 }

@@ -5,7 +5,7 @@ import DashboardTemplate from '../../components/templates/DashboardTemplate';
 import DashboardStats from '../../components/organisms/DashboardStats';
 import Alert from '../../components/atoms/Alert';
 import { useAuth } from '../contexts/AuthContext';
-import dashboardService from '../servives/dashboardService';
+import dashboardService from '../services/dashboardService';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -68,25 +68,25 @@ export default function DashboardPage() {
           <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>Ações Rápidas</h3>
           <div className='space-y-3'>
             <button className='w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors'>
-              <div className='flex items-center'>
+              <Link href="/dashboard/clients" className='flex items-center'>
                 <div className='w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3'>
                   <span className="text-blue-600 dark:text-blue-400 text-sm font-bold">+</span>
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Adicionar Cliente
                 </span>
-              </div>
+              </Link>
             </button>
 
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="flex items-center">
+              <Link href="/dashboard/products" className="flex items-center">
                 <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-3">
                   <span className="text-green-600 dark:text-green-400 text-sm font-bold">+</span>
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Adicionar Produto
                 </span>
-              </div>
+              </Link>
             </button>
 
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
@@ -101,7 +101,7 @@ export default function DashboardPage() {
             </button>
 
             <button  className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <Link href="/companies" className="flex items-center">
+              <Link href="/dashboard/companies" className="flex items-center">
                 <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-3">
                   <span className="text-orange-600 dark:text-orange-400 text-sm font-bold"></span>
                 </div>
