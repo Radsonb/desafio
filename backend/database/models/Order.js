@@ -39,3 +39,5 @@ const orderSchema = new mongoose.Schema({
 orderSchema.index({ company_id: 1 });
 orderSchema.index({ client_id: 1 });
 orderSchema.index({ order_number: 1, company_id: 1 }, { unique: true });
+
+module.exports = mongoose.model('orders', orderSchema);
