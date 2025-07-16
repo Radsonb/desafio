@@ -79,7 +79,6 @@ class AuthService {
     if (error.response?.data?.erro) {
       return new Error(error.response.data.erro)
     } else if (error.response?.data?.detalhes) {
-      // Erros de validação
       const details = error.response.data.detalhes
       if (Array.isArray(details)) {
         return new Error(details.map(d => d.msg).join(', '))

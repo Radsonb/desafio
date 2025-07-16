@@ -131,7 +131,7 @@ const CompanyForm = ({
           variant="outline"
           onClick={onCancel}
           disabled={loading}
-          className="flex-1"
+          className="flex-1  rounded-xl hover:bg-gray-200"
         >
           Cancelar
         </Button>

@@ -90,14 +90,14 @@ export default function DashboardPage() {
             </button>
 
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="flex items-center">
+              <Link href="/dashboard/orders" className="flex items-center">
                 <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-3">
                   <span className="text-purple-600 dark:text-purple-400 text-sm font-bold">+</span>
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nova Venda
                 </span>
-              </div>
+              </Link>
             </button>
 
             <button  className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
