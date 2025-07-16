@@ -118,7 +118,7 @@ const ProductForm = ({
           value={formData.company_id}
           onChange={(e) => handleInputChange('company_id', e.target.value)}
           className={`w-full border border-gray-300 rounded-lg p-2 ${errors.company_id ? 'border-red-500' : ''}`}
-          disabled={!!product} // Desabilita edição da empresa se estiver editando
+          disabled={!!product}
         >
           <option value="">Selecione uma empresa</option>
           {companies.map((company) => (

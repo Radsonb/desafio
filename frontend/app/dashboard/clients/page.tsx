@@ -15,16 +15,14 @@ import Card from '../../../components/atoms/Card'
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [loading, setLoading] = useState(false); // Para visualização
+  const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
-  // DADOS MOCKADOS TEMPORÁRIOS
   useEffect(() => {
-    // Mock de empresas
     const mockCompanies = [
       {
         _id: '1',
@@ -40,7 +38,6 @@ export default function ClientsPage() {
       }
     ];
 
-    // Mock de clientes
     const mockClients = [
       {
         _id: '1',
@@ -89,7 +86,6 @@ export default function ClientsPage() {
   }, []);
 
   const handleCreateClient = async (clientData) => {
-    // Simulação de criação
     const newClient = {
       _id: Date.now().toString(),
       ...clientData,
@@ -102,7 +98,6 @@ export default function ClientsPage() {
   };
 
   const handleUpdateClient = async (clientData) => {
-    // Simulação de atualização
     setClients(prev => prev.map(c => 
       c._id === editingClient._id 
         ? { ...c, ...clientData, company_id: companies.find(comp => comp._id === clientData.company_id) }
@@ -118,7 +113,6 @@ export default function ClientsPage() {
       return;
     }
     
-    // Simulação de exclusão
     setClients(prev => prev.filter(c => c._id !== clientId));
     setSuccess('Cliente excluído com sucesso! (Mock)');
   };

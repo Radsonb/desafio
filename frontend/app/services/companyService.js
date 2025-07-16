@@ -1,7 +1,6 @@
 import api from './api'
 
 const companyService = {
-  // Buscar todas as empresas do usuário
   async getAll() {
     try {
       const response = await api.get('/companies')
@@ -11,7 +10,6 @@ const companyService = {
     }
   },
 
-  // Buscar empresa por ID
   async getById(id) {
     try {
       const response = await api.get(`/companies/${id}`)
@@ -21,7 +19,6 @@ const companyService = {
     }
   },
 
-  // Criar nova empresa
   async create(companyData) {
     try {
       const response = await api.post('/companies', companyData)
@@ -31,7 +28,6 @@ const companyService = {
     }
   },
 
-  // Atualizar empresa
   async update(id, companyData) {
     try {
       const response = await api.put(`/companies/${id}`, companyData)
@@ -41,7 +37,6 @@ const companyService = {
     }
   },
 
-  // Deletar empresa
   async delete(id) {
     try {
       const response = await api.delete(`/companies/${id}`)

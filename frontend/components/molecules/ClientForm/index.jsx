@@ -78,10 +78,8 @@ const ClientForm = ({
   }
 
   const formatPhone = (value) => {
-    // Remove tudo que não é número
     const numbers = value.replace(/\D/g, '')
     
-    // Aplica máscara (XX) XXXXX-XXXX
     if (numbers.length <= 11) {
       return numbers.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3')
                    .replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3')
@@ -142,7 +140,7 @@ const ClientForm = ({
           value={formData.company_id}
           onChange={(e) => handleInputChange('company_id', e.target.value)}
           className={`w-full border border-gray-300 rounded-lg p-2 ${errors.company_id ? 'border-red-500' : ''}`}
-          disabled={!!client} // Desabilita edição da empresa se estiver editando
+          disabled={!!client}
         >
           <option value="">Selecione uma empresa</option>
           {companies.map((company) => (

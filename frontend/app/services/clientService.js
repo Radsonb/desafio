@@ -1,7 +1,6 @@
 import api from './api'
 
 const clientService = {
-  // Buscar todos os clientes do usuário
   async getAll(companyId = null) {
     try {
       const url = companyId ? `/clients?company_id=${companyId}` : '/clients'
@@ -12,7 +11,6 @@ const clientService = {
     }
   },
 
-  // Buscar cliente por ID
   async getById(id) {
     try {
       const response = await api.get(`/clients/${id}`)
@@ -22,7 +20,6 @@ const clientService = {
     }
   },
 
-  // Criar novo cliente
   async create(clientData) {
     try {
       const response = await api.post('/clients', clientData)
@@ -32,7 +29,6 @@ const clientService = {
     }
   },
 
-  // Atualizar cliente
   async update(id, clientData) {
     try {
       const response = await api.put(`/clients/${id}`, clientData)
@@ -42,7 +38,6 @@ const clientService = {
     }
   },
 
-  // Deletar cliente
   async delete(id) {
     try {
       const response = await api.delete(`/clients/${id}`)
@@ -52,7 +47,6 @@ const clientService = {
     }
   },
 
-  // Buscar clientes por nome/email
   async search(query, companyId) {
     try {
       const response = await api.get(`/clients/search?q=${query}&company_id=${companyId}`)

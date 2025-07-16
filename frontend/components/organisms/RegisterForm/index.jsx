@@ -26,7 +26,6 @@ const RegisterForm = ({ onSubmit, loading = false, error = null }) => {
       [name]: value
     }))
 
-    // Limpar erro do campo quando usuário começar a digitar
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,

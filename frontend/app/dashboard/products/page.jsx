@@ -15,16 +15,14 @@ import Card from '../../../components/atoms/Card'
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [loading, setLoading] = useState(false); // Mude para false
+  const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
-  // DADOS MOCKADOS TEMPORÁRIOS - ADICIONE ISSO
   useEffect(() => {
-    // Mock de empresas
     const mockCompanies = [
       {
         _id: '1',
@@ -40,7 +38,6 @@ export default function ProductsPage() {
       }
     ];
 
-    // Mock de produtos
     const mockProducts = [
       {
         _id: '1',
@@ -115,7 +112,6 @@ export default function ProductsPage() {
   };
 
   const handleCreateProduct = async (productData) => {
-    // Simulação de criação
     const newProduct = {
       _id: Date.now().toString(),
       ...productData,
@@ -128,7 +124,6 @@ export default function ProductsPage() {
   };
 
   const handleUpdateProduct = async (productData) => {
-    // Simulação de atualização
     setProducts(prev => prev.map(p => 
       p._id === editingProduct._id 
         ? { ...p, ...productData, company_id: companies.find(c => c._id === productData.company_id) }
@@ -144,7 +139,6 @@ export default function ProductsPage() {
       return;
     }
     
-    // Simulação de exclusão
     setProducts(prev => prev.filter(p => p._id !== productId));
     setSuccess('Produto excluído com sucesso! (Mock)');
   };
@@ -159,7 +153,7 @@ export default function ProductsPage() {
     setEditingProduct(null)
   };
 
-  // if (!isAuthenticated) return null; // Comente esta linha
+  // if (!isAuthenticated) return null;
 
   return (
     <DashboardTemplate title="Produtos" subtitle='Gerencie os produtos disponíveis para venda'>
