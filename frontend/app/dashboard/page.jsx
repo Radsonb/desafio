@@ -1,11 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardTemplate from '@/components/templates/DashboardTemplate';
-import DashboardStats from '@/components/organisms/DashboardStats';
-import Alert from '@/components/atoms/Alert';
+import DashboardTemplate from '../../components/templates/DashboardTemplate';
+import DashboardStats from '../../components/organisms/DashboardStats';
+import Alert from '../../components/atoms/Alert';
 import { useAuth } from '../contexts/AuthContext';
 import dashboardService from '../servives/dashboardService';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -16,17 +17,17 @@ export default function DashboardPage() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { isAuthenticated } = useAuth();
+  // const { isAuthenticated } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return
-    }
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.push('/login');
+  //     return
+  //   }
 
-    loadDashboardData();
-  }, [isAuthenticated, router]);
+  //   loadDashboardData();
+  // }, [isAuthenticated, router]);
 
   const loadDashboardData = async () => {
     try {
@@ -41,7 +42,7 @@ export default function DashboardPage() {
     }
   }
 
-  if (!isAuthenticated) return null;
+  // if (!isAuthenticated) return null;
 
   return (
     <DashboardTemplate title='Dashboard'>
@@ -97,6 +98,17 @@ export default function DashboardPage() {
                   Nova Venda
                 </span>
               </div>
+            </button>
+
+            <button  className="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <Link href="/companies" className="flex items-center">
+                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-orange-600 dark:text-orange-400 text-sm font-bold"></span>
+                </div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Gerenciar Empresas
+                </span>
+              </Link>
             </button>
           </div>
         </div>

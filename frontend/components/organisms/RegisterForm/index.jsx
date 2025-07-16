@@ -5,16 +5,19 @@ import Button from '../../../components/atoms/Button'
 import Alert from '../../../components/atoms/Alert'
 import FormField from '../../../components/molecules/FormField'
 import Checkbox from '../../../components/molecules/Checkbox'
-import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import { EnvelopeIcon, LockClosedIcon, UserIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
 
-const LoginForm = ({ onSubmit, loading = false, error = null }) => {
+const RegisterForm = ({ onSubmit, loading = false, error = null }) => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    company: ''
   })
 
   const [errors, setErrors] = useState({})
-  const [rememberMe, setRememberMe] = useState(false)
+  const [acceptTerms, setAcceptTerms] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -35,6 +38,12 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
   const validateForm = () => {
     const newErrors = {}
 
+    if (!formData.name) {
+      newErrors.name = 'Nome é obrigatório'
+    } else if (formData.name.length < 2) {
+      newErrors.name = 'Nome deve ter pelo menos 2 caracteres'
+    }
+
     if (!formData.email) {
       newErrors.email = 'Email é obrigatório'
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -47,6 +56,20 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
       newErrors.password = 'Senha deve ter pelo menos 6 caracteres'
     }
 
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Confirmação de senha é obrigatória'
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Senhas não coincidem'
+    }
+
+    if (!formData.company) {
+      newErrors.company = 'Nome da empresa é obrigatório'
+    }
+
+    if (!acceptTerms) {
+      newErrors.terms = 'Você deve aceitar os termos de uso'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -55,7 +78,7 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
     e.preventDefault()
 
     if (validateForm()) {
-      onSubmit({ ...formData, rememberMe })
+      onSubmit(formData)
     }
   }
 
@@ -65,10 +88,10 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Entrar na sua conta
+            Criar nova conta
           </h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Faça login para acessar o sistema
+            Preencha os dados para criar sua conta
           </p>
         </div>
 
@@ -83,6 +106,18 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
         {/* Form Fields */}
         <div className="space-y-4">
           <FormField
+            label="Nome completo"
+            name="name"
+            type="text"
+            placeholder="Seu nome completo"
+            value={formData.name}
+            onChange={handleChange}
+            error={errors.name}
+            required
+            icon={UserIcon}
+          />
+
+          <FormField
             label="Email"
             name="email"
             type="email"
@@ -92,6 +127,18 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
             error={errors.email}
             required
             icon={EnvelopeIcon}
+          />
+
+          <FormField
+            label="Empresa"
+            name="company"
+            type="text"
+            placeholder="Nome da sua empresa"
+            value={formData.company}
+            onChange={handleChange}
+            error={errors.company}
+            required
+            icon={BuildingOfficeIcon}
           />
 
           <FormField
@@ -105,8 +152,36 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
             required
             icon={LockClosedIcon}
           />
+
+          <FormField
+            label="Confirmar senha"
+            name="confirmPassword"
+            type="password"
+            placeholder="••••••••"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            error={errors.confirmPassword}
+            required
+            icon={LockClosedIcon}
+          />
         </div>
 
+        {/* Terms Checkbox */}
+        <div className="space-y-2">
+          <Checkbox
+            id="terms"
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            label="Eu aceito os termos de uso e política de privacidade"
+          />
+          {errors.terms && (
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {errors.terms}
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
         <div className='flex justify-center'>
           <Button
             type="submit"
@@ -114,40 +189,18 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
             loading={loading}
             className="w-32 rounded-lg items-center bg-blue-600 text-white"
           >
-            Entrar
+            Criar conta
           </Button>
         </div>
 
-        {/* Remember & Forgot */}
-        <div className="flex items-center justify-between">
-          <Checkbox
-            id="remember"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            label="Lembrar-me"
-          />
-
-          <a
-            href="#"
-            className="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400"
-          >
-            Esqueceu a senha?
-          </a>
-        </div>
-
-        {/* Submit Button */}
-
-
-
-
-        {/* Sign Up Link */}
+        {/* Login Link */}
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Não tem uma conta?{' '}
+          Já tem uma conta?{' '}
           <a
-            href="/register"
+            href="/login"
             className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400"
           >
-            Criar conta
+            Fazer login
           </a>
         </p>
       </form>
@@ -155,4 +208,4 @@ const LoginForm = ({ onSubmit, loading = false, error = null }) => {
   )
 }
 
-export default LoginForm
+export default RegisterForm

@@ -24,6 +24,8 @@ class UserController{
 
       const user = await userRepository.create({name, email, password});
 
+      const token = generateToken(user._id);
+
       res.status(201).json({
         message: 'Usuário criado com sucesso',
         user: {
@@ -31,6 +33,7 @@ class UserController{
           name: user.name,
           email: user.email
         },
+        token
       });
     } catch (error) {
       res.status(500).json({

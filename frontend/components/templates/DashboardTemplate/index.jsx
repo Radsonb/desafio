@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import DashboardHeader from '@/components/molecules/DashboardHeader/index.';
+import DashboardHeader from '../../../components/molecules/DashboardHeader/index.';
 import { useAuth } from '../../../app/contexts/AuthContext';
 
 const DashboardTemplate = ({ children, title = 'Dashboad' }) => {

@@ -1,14 +1,14 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import AuthTemplate from '../../components/templates/AuthTemplate'
-import LoginForm from '../../components/organisms/LoginForm'
-import { useAuth } from '../contexts/AuthContext'
+import AuthTemplate from '../../../components/templates/AuthTemplate'
+import RegisterForm from '../../../components/organisms/RegisterForm'
+import { useAuth } from '../../contexts/AuthContext'
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const { login, isAuthenticated } = useAuth()
+  const { register, isAuthenticated } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -17,12 +17,12 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router])
 
-  const handleLogin = async (credentials) => {
+  const handleRegister = async (userData) => {
     setLoading(true)
     setError('')
 
     try {
-      await login(credentials)
+      await register(userData)
       router.push('/dashboard')
     } catch (error) {
       setError(error.message)
@@ -33,8 +33,8 @@ export default function LoginPage() {
 
   return (
     <AuthTemplate>
-      <LoginForm 
-        onSubmit={handleLogin}
+      <RegisterForm 
+        onSubmit={handleRegister}
         loading={loading}
         error={error}
       />

@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
-import Label from '@/components/atoms/Label'
-import Input from '@/components/atoms/Input'
+import Label from '../../../components/atoms/Label'
+import Input from '../../../components/atoms/Input'
 
 const FormField = ({ 
   label, 

@@ -38,11 +38,17 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await authService.register(userData)
-      setUser(response.user)
-      return response
+      const response = await authService.register(userData);
+
+      if(response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        setUser(response.user);
+      } else {
+        throw new Error('Falha no registro');
+      }
     } catch (error) {
-      throw error
+      throw new Error(error.response?.data?.message || 'Erro ao criar conta');
     }
   }
 
@@ -51,17 +57,18 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
   }
 
-  const value = {
-    user,
-    login,
-    register,
-    logout,
-    loading,
-    isAuthenticated: authService.isAuthenticated()
-  }
+  // Computar isAuthenticated baseado no user
+  const isAuthenticated = !!user
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated,
+      login,
+      register,
+      logout,
+      loading
+    }}>
       {children}
     </AuthContext.Provider>
   )
