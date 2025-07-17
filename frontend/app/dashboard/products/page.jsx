@@ -15,74 +15,26 @@ import Card from '../../../components/atoms/Card'
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const router = useRouter();
   
+  const { isAuthenticated } = useAuth();
+
   useEffect(() => {
-    const mockCompanies = [
-      {
-        _id: '1',
-        fantasy_name: 'Empresa Teste 1',
-        razao_social: 'Empresa Teste LTDA',
-        cnpj: '12.345.678/0001-90'
-      },
-      {
-        _id: '2', 
-        fantasy_name: 'Empresa Teste 2',
-        razao_social: 'Segunda Empresa LTDA',
-        cnpj: '98.765.432/0001-10'
-      }
-    ];
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
 
-    const mockProducts = [
-      {
-        _id: '1',
-        name: 'Produto Exemplo 1',
-        value: 199.99,
-        description: 'Este é um produto de exemplo para testar a interface',
-        company_id: {
-          _id: '1',
-          fantasy_name: 'Empresa Teste 1'
-        }
-      },
-      {
-        _id: '2',
-        name: 'Produto Exemplo 2', 
-        value: 299.50,
-        description: 'Outro produto para demonstração da listagem',
-        company_id: {
-          _id: '2',
-          fantasy_name: 'Empresa Teste 2'
-        }
-      },
-      {
-        _id: '3',
-        name: 'Produto Sem Descrição',
-        value: 99.99,
-        description: '',
-        company_id: {
-          _id: '1',
-          fantasy_name: 'Empresa Teste 1'
-        }
-      }
-    ];
+    loadData()
+  }, [isAuthenticated, router]);
 
-    setCompanies(mockCompanies);
-    setProducts(mockProducts);
-  }, []);
 
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     router.push('/login')
-  //     return
-  //   }
-
-  //   loadData()
-  // }, [isAuthenticated, router]);
 
   const loadData = async () => {
     try {
@@ -112,35 +64,46 @@ export default function ProductsPage() {
   };
 
   const handleCreateProduct = async (productData) => {
-    const newProduct = {
-      _id: Date.now().toString(),
-      ...productData,
-      company_id: companies.find(c => c._id === productData.company_id)
-    };
-    
-    setProducts(prev => [...prev, newProduct]);
-    setSuccess('Produto criado com sucesso! (Mock)');
-    setShowForm(false);
+    try {
+      setFormLoading(true)
+      await productService.create(productData)
+      setSuccess('Produto criado com sucesso!')
+      setShowForm(false)
+      loadProducts()
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setFormLoading(false)
+    }
   };
 
   const handleUpdateProduct = async (productData) => {
-    setProducts(prev => prev.map(p => 
-      p._id === editingProduct._id 
-        ? { ...p, ...productData, company_id: companies.find(c => c._id === productData.company_id) }
-        : p
-    ));
-    setSuccess('Produto atualizado com sucesso! (Mock)');
-    setShowForm(false);
-    setEditingProduct(null);
+    try {
+      setFormLoading(true)
+      await productService.update(editingProduct._id, productData)
+      setSuccess('Produto atualizado com sucesso!')
+      setShowForm(false)
+      setEditingProduct(null)
+      loadProducts()
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setFormLoading(false)
+    }
   };
 
   const handleDeleteProduct = async (productId) => {
     if (!confirm('Tem certeza que deseja excluir este produto?')) {
-      return;
+      return
     }
-    
-    setProducts(prev => prev.filter(p => p._id !== productId));
-    setSuccess('Produto excluído com sucesso! (Mock)');
+
+    try {
+      await productService.delete(productId)
+      setSuccess('Produto excluído com sucesso!')
+      loadProducts()
+    } catch (error) {
+      setError(error.message)
+    }
   };
 
   const handleEdit = (product) => {
@@ -153,7 +116,7 @@ export default function ProductsPage() {
     setEditingProduct(null)
   };
 
-  // if (!isAuthenticated) return null;
+  if (!isAuthenticated) return null;
 
   return (
     <DashboardTemplate title="Produtos" subtitle='Gerencie os produtos disponíveis para venda'>

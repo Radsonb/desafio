@@ -57,7 +57,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
   }
 
-  // Computar isAuthenticated baseado no user
   const isAuthenticated = !!user
 
   return (

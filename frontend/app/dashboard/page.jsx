@@ -15,25 +15,30 @@ export default function DashboardPage() {
     clients: 0,
     sales: 0
   });
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     router.push('/login');
-  //     return
-  //   }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return
+    }
 
-  //   loadDashboardData();
-  // }, [isAuthenticated, router]);
+    loadDashboardData();
+  }, [isAuthenticated, router]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true)
-      const dashboardStats = await dashboardService.getStats();
+      const [dashboardStats, recentActivities] = await Promise.all([
+        dashboardService.getStats(),
+        dashboardService.getActivities()
+      ]);
       setStats(dashboardStats);
+      setActivities(recentActivities);
     } catch (error) {
       setError('Erro ao carregar dados do dashboard');
       console.error('Dashboard error:', error);
@@ -42,7 +47,7 @@ export default function DashboardPage() {
     }
   }
 
-  // if (!isAuthenticated) return null;
+  if (!isAuthenticated) return null;
 
   return (
     <DashboardTemplate title='Dashboard'>
@@ -118,21 +123,38 @@ export default function DashboardPage() {
             Atividade Recente
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-              <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-              <span>Novo cliente cadastrado</span>
-              <span className="ml-auto text-xs">2 min atrás</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-              <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-              <span>Produto atualizado</span>
-              <span className="ml-auto text-xs">5 min atrás</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-              <div className="w-2 h-2 bg-orange-400 rounded-full mr-3"></div>
-              <span>Nova venda realizada</span>
-              <span className="ml-auto text-xs">10 min atrás</span>
-            </div>
+            {loading ? (
+              <div className="text-center text-gray-500 py-4">
+                <div className="animate-pulse">Carregando atividades...</div>
+              </div>
+            ) : activities.length > 0 ? (
+              activities.map((activity, index) => (
+                <div key={index} className="flex items-start text-sm text-gray-600 dark:text-gray-400 py-2">
+                  <div className={`w-2 h-2 bg-${activity.color}-400 rounded-full mr-3 mt-2 flex-shrink-0`}></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate">{activity.message}</div>
+                    {activity.details && (
+                      <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        {activity.details}
+                      </div>
+                    )}
+                  </div>
+                  <span className="ml-3 text-xs text-gray-400 flex-shrink-0">
+                    {new Date(activity.time).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-gray-500 py-4">
+                <div className="text-sm">Nenhuma atividade recente</div>
+                <div className="text-xs mt-1">Comece cadastrando empresas, produtos ou clientes!</div>
+              </div>
+            )}
           </div>
         </div>
 

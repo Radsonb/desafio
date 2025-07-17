@@ -16,9 +16,9 @@ class DashboardService {
     }
   }
 
-  async getRecentActivity() {
+  async getActivities() {
     try {
-      const response = await api.get('/dashboard/recent-activity');
+      const response = await api.get('/activities');
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar atividades recentes:", error);

@@ -19,17 +19,17 @@ export default function CompaniesPage() {
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  // const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     router.push('/login')
-  //     return
-  //   }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
 
-  //   loadCompanies()
-  // }, [isAuthenticated, router]);
+    loadCompanies()
+  }, [isAuthenticated, router]);
 
   const loadCompanies = async () => {
     try {
@@ -97,7 +97,7 @@ export default function CompaniesPage() {
     setEditingCompany(null)
   };
 
-  // if (!isAuthenticated) return null;
+  if (!isAuthenticated) return null;
 
   return (
     <DashboardTemplate title="Empresas" subtitle='Gerencie as empresas que vendem seus produtos'>

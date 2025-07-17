@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import Button from '../../atoms/Button';
-import { BellIcon, FireIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { BellIcon, FireIcon, UserCircleIcon, } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 const DashboardHeader = ({ user, onLogout }) => {
@@ -28,7 +28,9 @@ const DashboardHeader = ({ user, onLogout }) => {
               variant='outline'
               size="sm"
               onClick={onLogout}
+              className='rounded-xl hover:bg-gray-200'
             >
+              
               Sair
             </Button>
           </div>

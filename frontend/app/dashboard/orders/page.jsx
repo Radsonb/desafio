@@ -19,193 +19,96 @@ export default function OrdersPage() {
   const [companies, setCompanies] = useState([]);
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
+  const { isAuthenticated } = useAuth();
+
   useEffect(() => {
-    const mockCompanies = [
-      {
-        _id: '1',
-        fantasy_name: 'Empresa Teste 1',
-        razao_social: 'Empresa Teste LTDA',
-        cnpj: '12.345.678/0001-90'
-      },
-      {
-        _id: '2', 
-        fantasy_name: 'Empresa Teste 2',
-        razao_social: 'Segunda Empresa LTDA',
-        cnpj: '98.765.432/0001-10'
-      }
-    ];
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
 
-    const mockClients = [
-      {
-        _id: '1',
-        name: 'João Silva',
-        email: 'joao.silva@email.com',
-        phone: '(11) 99999-1234',
-        company_id: { _id: '1', fantasy_name: 'Empresa Teste 1' }
-      },
-      {
-        _id: '2',
-        name: 'Maria Santos',
-        email: 'maria.santos@email.com',
-        phone: '(11) 88888-5678',
-        company_id: { _id: '2', fantasy_name: 'Empresa Teste 2' }
-      },
-      {
-        _id: '3',
-        name: 'Pedro Oliveira',
-        email: 'pedro.oliveira@email.com',
-        phone: '',
-        company_id: { _id: '1', fantasy_name: 'Empresa Teste 1' }
-      }
-    ];
+    loadData()
+  }, [isAuthenticated, router]);
 
-    const mockProducts = [
-      {
-        _id: '1',
-        name: 'Produto A',
-        value: 199.99,
-        description: 'Produto de exemplo',
-        company_id: { _id: '1', fantasy_name: 'Empresa Teste 1' }
-      },
-      {
-        _id: '2',
-        name: 'Produto B', 
-        value: 299.50,
-        description: 'Outro produto',
-        company_id: { _id: '2', fantasy_name: 'Empresa Teste 2' }
-      },
-      {
-        _id: '3',
-        name: 'Produto C',
-        value: 99.99,
-        description: 'Terceiro produto',
-        company_id: { _id: '1', fantasy_name: 'Empresa Teste 1' }
-      }
-    ];
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      const [ordersData, companiesData, clientsData, productsData] = await Promise.all([
+        orderService.getAll(),
+        companyService.getAll(),
+        clientService.getAll(),
+        productService.getAll()
+      ])
+      setOrders(Array.isArray(ordersData) ? ordersData : [])
+      setCompanies(Array.isArray(companiesData) ? companiesData : [])
+      setClients(Array.isArray(clientsData) ? clientsData : [])
+      setProducts(Array.isArray(productsData) ? productsData : [])
+    } catch (error) {
+      setError('Erro ao carregar dados')
+      console.error('Load data error:', error)
+    } finally {
+      setLoading(false)
+    }
+  };
 
-    const mockOrders = [
-      {
-        _id: '1',
-        order_number: 1001,
-        order_date: new Date().toISOString(),
-        status: 'pending',
-        total_value: 599.97,
-        notes: 'Pedido urgente',
-        company_id: { _id: '1', fantasy_name: 'Empresa Teste 1' },
-        client_id: { _id: '1', name: 'João Silva', email: 'joao.silva@email.com' },
-        products: [
-          {
-            product_id: '1',
-            product: { _id: '1', name: 'Produto A' },
-            quantity: 2,
-            unit_price: 199.99,
-            total_price: 399.98
-          },
-          {
-            product_id: '3',
-            product: { _id: '3', name: 'Produto C' },
-            quantity: 2,
-            unit_price: 99.99,
-            total_price: 199.98
-          }
-        ]
-      },
-      {
-        _id: '2',
-        order_number: 1002,
-        order_date: new Date(Date.now() - 86400000).toISOString(),
-        status: 'confirmed',
-        total_value: 299.50,
-        notes: '',
-        company_id: { _id: '2', fantasy_name: 'Empresa Teste 2' },
-        client_id: { _id: '2', name: 'Maria Santos', email: 'maria.santos@email.com' },
-        products: [
-          {
-            product_id: '2',
-            product: { _id: '2', name: 'Produto B' },
-            quantity: 1,
-            unit_price: 299.50,
-            total_price: 299.50
-          }
-        ]
-      }
-    ];
-
-    setCompanies(mockCompanies);
-    setClients(mockClients);
-    setProducts(mockProducts);
-    setOrders(mockOrders);
-  }, []);
+  const loadOrders = async () => {
+    try {
+      const data = await orderService.getAll()
+      setOrders(Array.isArray(data) ? data : [])
+    } catch (error) {
+      setError('Erro ao carregar pedidos')
+      console.error('Orders error:', error)
+    }
+  };
 
   const handleCreateOrder = async (orderData) => {
-    const totalValue = orderData.products.reduce((sum, p) => {
-      const product = products.find(pr => pr._id === p.product_id);
-      return sum + (product.value * p.quantity);
-    }, 0);
-
-    const newOrder = {
-      _id: Date.now().toString(),
-      order_number: Math.max(...orders.map(o => o.order_number), 1000) + 1,
-      order_date: new Date().toISOString(),
-      total_value: totalValue,
-      ...orderData,
-      company_id: companies.find(c => c._id === orderData.company_id),
-      client_id: clients.find(c => c._id === orderData.client_id),
-      products: orderData.products.map(p => ({
-        ...p,
-        product: products.find(pr => pr._id === p.product_id),
-        unit_price: products.find(pr => pr._id === p.product_id).value,
-        total_price: products.find(pr => pr._id === p.product_id).value * p.quantity
-      }))
-    };
-    
-    setOrders(prev => [newOrder, ...prev]);
-    setSuccess('Pedido criado com sucesso! (Mock)');
-    setShowForm(false);
+    try {
+      setFormLoading(true)
+      await orderService.create(orderData)
+      setSuccess('Pedido criado com sucesso!')
+      setShowForm(false)
+      loadOrders()
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setFormLoading(false)
+    }
   };
 
   const handleUpdateOrder = async (orderData) => {
-    const totalValue = orderData.products.reduce((sum, p) => {
-      const product = products.find(pr => pr._id === p.product_id);
-      return sum + (product.value * p.quantity);
-    }, 0);
-
-    setOrders(prev => prev.map(o => 
-      o._id === editingOrder._id 
-        ? { 
-            ...o, 
-            ...orderData,
-            total_value: totalValue,
-            company_id: companies.find(c => c._id === orderData.company_id),
-            client_id: clients.find(c => c._id === orderData.client_id),
-            products: orderData.products.map(p => ({
-              ...p,
-              product: products.find(pr => pr._id === p.product_id),
-              unit_price: products.find(pr => pr._id === p.product_id).value,
-              total_price: products.find(pr => pr._id === p.product_id).value * p.quantity
-            }))
-          }
-        : o
-    ));
-    setSuccess('Pedido atualizado com sucesso! (Mock)');
-    setShowForm(false);
-    setEditingOrder(null);
+    try {
+      setFormLoading(true)
+      await orderService.update(editingOrder._id, orderData)
+      setSuccess('Pedido atualizado com sucesso!')
+      setShowForm(false)
+      setEditingOrder(null)
+      loadOrders()
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setFormLoading(false)
+    }
   };
 
   const handleDeleteOrder = async (orderId) => {
     if (!confirm('Tem certeza que deseja excluir este pedido?')) {
-      return;
+      return
     }
-    
-    setOrders(prev => prev.filter(o => o._id !== orderId));
-    setSuccess('Pedido excluído com sucesso! (Mock)');
+
+    try {
+      await orderService.delete(orderId)
+      setSuccess('Pedido excluído com sucesso!')
+      loadOrders()
+    } catch (error) {
+      setError(error.message)
+    }
   };
 
   const handleEdit = (order) => {
@@ -223,6 +126,8 @@ export default function OrdersPage() {
   };
 
   const router = useRouter();
+
+  if (!isAuthenticated) return null;
 
   return (
     <DashboardTemplate title="Pedidos" subtitle='Gerencie pedidos e vendas'>

@@ -15,106 +15,93 @@ import Card from '../../../components/atoms/Card'
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
   useEffect(() => {
-    const mockCompanies = [
-      {
-        _id: '1',
-        fantasy_name: 'Empresa Teste 1',
-        razao_social: 'Empresa Teste LTDA',
-        cnpj: '12.345.678/0001-90'
-      },
-      {
-        _id: '2', 
-        fantasy_name: 'Empresa Teste 2',
-        razao_social: 'Segunda Empresa LTDA',
-        cnpj: '98.765.432/0001-10'
-      }
-    ];
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
 
-    const mockClients = [
-      {
-        _id: '1',
-        name: 'João Silva',
-        email: 'joao.silva@email.com',
-        phone: '(11) 99999-1234',
-        company_id: {
-          _id: '1',
-          fantasy_name: 'Empresa Teste 1'
-        }
-      },
-      {
-        _id: '2',
-        name: 'Maria Santos',
-        email: 'maria.santos@email.com',
-        phone: '(11) 88888-5678',
-        company_id: {
-          _id: '2',
-          fantasy_name: 'Empresa Teste 2'
-        }
-      },
-      {
-        _id: '3',
-        name: 'Pedro Oliveira',
-        email: 'pedro.oliveira@email.com',
-        phone: '',
-        company_id: {
-          _id: '1',
-          fantasy_name: 'Empresa Teste 1'
-        }
-      },
-      {
-        _id: '4',
-        name: 'Ana Costa',
-        email: 'ana.costa@email.com',
-        phone: '(21) 77777-9999',
-        company_id: {
-          _id: '2',
-          fantasy_name: 'Empresa Teste 2'
-        }
-      }
-    ];
+    loadData()
+  }, [isAuthenticated, router]);
 
-    setCompanies(mockCompanies);
-    setClients(mockClients);
-  }, []);
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      const [clientsData, companiesData] = await Promise.all([
+        clientService.getAll(),
+        companyService.getAll()
+      ])
+      setClients(Array.isArray(clientsData) ? clientsData : [])
+      setCompanies(Array.isArray(companiesData) ? companiesData : [])
+    } catch (error) {
+      setError('Erro ao carregar dados')
+      console.error('Load data error:', error)
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  const loadClients = async () => {
+    try {
+      const data = await clientService.getAll()
+      setClients(Array.isArray(data) ? data : [])
+    } catch (error) {
+      setError('Erro ao carregar clientes')
+      console.error('Clients error:', error)
+    }
+  };
 
   const handleCreateClient = async (clientData) => {
-    const newClient = {
-      _id: Date.now().toString(),
-      ...clientData,
-      company_id: companies.find(c => c._id === clientData.company_id)
-    };
-    
-    setClients(prev => [...prev, newClient]);
-    setSuccess('Cliente criado com sucesso! (Mock)');
-    setShowForm(false);
+    try {
+      setFormLoading(true)
+      await clientService.create(clientData)
+      setSuccess('Cliente criado com sucesso!')
+      setShowForm(false)
+      loadClients()
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setFormLoading(false)
+    }
   };
 
   const handleUpdateClient = async (clientData) => {
-    setClients(prev => prev.map(c => 
-      c._id === editingClient._id 
-        ? { ...c, ...clientData, company_id: companies.find(comp => comp._id === clientData.company_id) }
-        : c
-    ));
-    setSuccess('Cliente atualizado com sucesso! (Mock)');
-    setShowForm(false);
-    setEditingClient(null);
+    try {
+      setFormLoading(true)
+      await clientService.update(editingClient._id, clientData)
+      setSuccess('Cliente atualizado com sucesso!')
+      setShowForm(false)
+      setEditingClient(null)
+      loadClients()
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setFormLoading(false)
+    }
   };
 
   const handleDeleteClient = async (clientId) => {
     if (!confirm('Tem certeza que deseja excluir este cliente?')) {
-      return;
+      return
     }
-    
-    setClients(prev => prev.filter(c => c._id !== clientId));
-    setSuccess('Cliente excluído com sucesso! (Mock)');
+
+    try {
+      await clientService.delete(clientId)
+      setSuccess('Cliente excluído com sucesso!')
+      loadClients()
+    } catch (error) {
+      setError(error.message)
+    }
   };
 
   const handleEdit = (client) => {
@@ -127,7 +114,8 @@ export default function ClientsPage() {
     setEditingClient(null)
   };
 
-  const router = useRouter();
+
+  if (!isAuthenticated) return null;
 
   return (
     <DashboardTemplate title="Clientes" subtitle='Gerencie seus clientes e contatos'>
