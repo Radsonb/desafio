@@ -2,7 +2,6 @@ const express = require('express');
 const { body } = require('express-validator');
 const companyController = require('../controllers/companyController');
 const auth = require('../middlewares/auth');
-const { handleValidationErrors, sanitizeFields, validateObjectId } = require('../utils/middlewares/validationHandler');
 const { validateCNPJ, validateCompanyName } = require('../utils/validators');
 
 const router = express.Router();
@@ -79,33 +78,26 @@ const updateCompanyValidation = [
 router.post(
   '/',
   auth,
-  sanitizeFields(['fantasy_name', 'razao_social', 'cnpj']),
   createCompanyValidation,
-  handleValidationErrors,
   companyController.create
 );
 
 router.get(
   '/:id',
   auth,
-  validateObjectId('id'),
   companyController.show
 );
 
 router.put(
   '/:id',
   auth,
-  validateObjectId('id'),
-  sanitizeFields(['fantasy_name', 'razao_social', 'cnpj']),
   updateCompanyValidation,
-  handleValidationErrors,
   companyController.update
 );
 
 router.delete(
   '/:id',
   auth,
-  validateObjectId('id'),
   companyController.delete
 );
 
